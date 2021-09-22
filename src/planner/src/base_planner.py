@@ -78,6 +78,13 @@ class Planner:
         print(len(self.map))
         print(type(self.map))
         print(type(self.map[0]))
+        map_values = {}
+        for value in self.map:
+            if value in map_values:
+                map_values[value] += 1
+            else:
+                map_value[value] = 1
+        print(map_values)
         # TODO: FILL ME! implement obstacle inflation function and define self.aug_map = new_mask
 
         # you should inflate the map to get self.aug_map

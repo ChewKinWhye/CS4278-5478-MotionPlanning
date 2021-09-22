@@ -59,6 +59,7 @@ class Planner:
         self.world_height = world_height
         self.resolution = world_resolution
         self.inflation_ratio = inflation_ratio
+        print("Calling map_callback()")
         self.map_callback()
         self.sb_obs = rospy.Subscriber('/scan', LaserScan, self._obs_callback)
         self.sb_pose = rospy.Subscriber(
@@ -73,7 +74,9 @@ class Planner:
         """Get the occupancy grid and inflate the obstacle by some pixels. You should implement the obstacle inflation yourself to handle uncertainty.
         """
         self.map = rospy.wait_for_message('/map', OccupancyGrid).data
-
+        print("Obtained map from simulator")
+        print(type(self.map))
+        print(self.map)
         # TODO: FILL ME! implement obstacle inflation function and define self.aug_map = new_mask
 
         # you should inflate the map to get self.aug_map
@@ -346,6 +349,7 @@ class Planner:
 
 if __name__ == "__main__":
     # TODO: You can run the code using the code below
+    print("Starting algorithm")
     parser = argparse.ArgumentParser()
     parser.add_argument('--goal', type=str, default='1,8',
                         help='goal position')
@@ -366,10 +370,13 @@ if __name__ == "__main__":
         width = 200
         height = 200
         resolution = 0.05
-
+    print("Finished parsing arguments")
+    
     # TODO: You should change this value accordingly
     inflation_ratio = 3
     planner = Planner(width, height, resolution, inflation_ratio=inflation_ratio)
+    print("Done Initialization")
+    
     planner.set_goal(goal[0], goal[1])
     if planner.goal is not None:
         planner.generate_plan()

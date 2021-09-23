@@ -63,6 +63,15 @@ class Planner:
         self.inflation_ratio = inflation_ratio
         print("Calling map_callback()")
         self.map_callback()
+        print(self.collision_checker(2, 2))
+        print(self.collision_checker(2, 3))
+        print(self.collision_checker(2, 4))
+        print(self.collision_checker(2, 5))
+
+        print(self.collision_checker(3, 2))
+        print(self.collision_checker(3, 3))
+        print(self.collision_checker(3, 4))
+        print(self.collision_checker(3, 5))
         self.sb_obs = rospy.Subscriber('/scan', LaserScan, self._obs_callback)
         self.sb_pose = rospy.Subscriber(
             '/base_pose_ground_truth', Odometry, self._pose_callback)
@@ -94,7 +103,7 @@ class Planner:
         for i in range(self.world_height):
             for ii in range(self.world_width):
                 if self.map[i, ii] == 100:
-                    pixel_buffer = int(ROBOT_SIZE / resolution * self.inflation_ratio)
+                    pixel_buffer = int((ROBOT_SIZE / 2) / resolution * self.inflation_ratio)
                     top_index = max(0, i - pixel_buffer)
                     bottom_index = min(self.world_height, i + pixel_buffer)
                     left_index = max(0, ii - pixel_buffer)

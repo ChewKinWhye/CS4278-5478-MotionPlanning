@@ -99,15 +99,11 @@ class Planner:
                     right_index = min(self.world_width, i + self.inflation_ratio)
                     self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), -1)
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
-        print(self.map)
-        print(self.aug_map)
         map_graph = copy.deepcopy(self.map)
-        print(map_graph)
         for i in range(self.world_height):
             for ii in range(self.world_width):
-                print(type(map_graph))
                 if map_graph[i, ii] == -1:
-                    map_graph = -100
+                    map_graph[i, ii] = -100
         plt.imshow(self.map, cmap='gray', vmin=-100, vmax=100, interpolation='none')
         plt.show()
 

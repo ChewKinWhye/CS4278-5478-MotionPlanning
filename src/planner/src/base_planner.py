@@ -220,7 +220,7 @@ class Planner:
             node = heapq.heappop(priority_queue)
             for action in actions:
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
-                if next_state not in visited_states and not self.collision_checker(next_state[0], next_state[1]):
+                if next_state is not None and next_state not in visited_states:
                     visited_states.add(next_state)
                     next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state)
                     heapq.heappush(priority_queue, next_node)

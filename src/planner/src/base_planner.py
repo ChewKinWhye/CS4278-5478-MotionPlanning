@@ -370,7 +370,7 @@ if __name__ == "__main__":
         goal = [int(pose) for pose in args.goal.split(',')]
     except:
         raise ValueError("Please enter correct goal format")
-    print(f"Goal: {goal}")
+    print("Goal:", goal)
     if args.com:
         width = 2500
         height = 983

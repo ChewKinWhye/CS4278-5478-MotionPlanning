@@ -101,7 +101,12 @@ class Planner:
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
         print(self.map)
         print(self.aug_map)
-        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        self.map_graph = copy.deepcopy(self.map)
+        for i in len(self.map_graph):
+            for ii in len(self.map_graph[i]):
+                if self.map_graph[i, ii] == -1:
+                    self.map_graph = -100
+        plt.imshow(self.map, cmap='gray', vmin=-100, vmax=100, interpolation='none')
         plt.show()
 
     def _pose_callback(self, msg):

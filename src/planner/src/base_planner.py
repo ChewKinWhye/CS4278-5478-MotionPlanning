@@ -92,10 +92,10 @@ class Planner:
         self.map = np.array(self.map).reshape((self.world_height, self.world_width))
         # you should inflate the map to get self.aug_map
         self.aug_map = copy.deepcopy(self.map)
+        pixel_buffer = int((ROBOT_SIZE / 2) / resolution * self.inflation_ratio)
         for i in range(self.world_height):
             for ii in range(self.world_width):
                 if self.map[i, ii] == 100:
-                    pixel_buffer = int((ROBOT_SIZE / 2) / resolution * self.inflation_ratio)
                     top_index = max(0, i - pixel_buffer)
                     bottom_index = min(self.world_height, i + pixel_buffer)
                     left_index = max(0, ii - pixel_buffer)

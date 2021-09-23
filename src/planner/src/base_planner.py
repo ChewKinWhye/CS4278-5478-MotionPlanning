@@ -104,7 +104,7 @@ class Planner:
             for ii in range(self.world_width):
                 if map_graph[i, ii] == -1:
                     map_graph[i, ii] = 100
-        plt.imshow(self.map, cmap='gray', vmin=100, vmax=100, interpolation='none')
+        plt.imshow(self.map, cmap='gray', vmin=0, vmax=100, interpolation='none')
         plt.show()
 
     def _pose_callback(self, msg):

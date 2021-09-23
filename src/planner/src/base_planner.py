@@ -103,6 +103,7 @@ class Planner:
         for i in range(self.world_height):
             for ii in range(self.world_width):
                 if map_graph[i, ii] == -1:
+                    print(i, ii)
                     map_graph[i, ii] = -1000
         plt.imshow(self.map, cmap='gray', vmin=-1000, vmax=100, interpolation='none')
         plt.show()

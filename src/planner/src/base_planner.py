@@ -105,8 +105,7 @@ class Planner:
         print(map_graph)
         for i in range(len(map_graph)):
             for ii in range(len(map_graph[i])):
-                print(map_graph[i])
-                if map_graph[i, ii] == -1:
+                if map_graph[i][ii] == -1:
                     map_graph = -100
         plt.imshow(self.map, cmap='gray', vmin=-100, vmax=100, interpolation='none')
         plt.show()

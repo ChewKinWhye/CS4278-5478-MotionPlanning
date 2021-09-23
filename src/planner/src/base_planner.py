@@ -92,20 +92,18 @@ class Planner:
         self.aug_map = copy.deepcopy(self.map)
         for i in range(self.world_height):
             for ii in range(self.world_width):
-                if self.map[i, ii] == -1:
-                    top_index = max(0, i - self.inflation_ratio)
-                    bottom_index = min(self.world_height, i + self.inflation_ratio)
-                    left_index = max(0, i - self.inflation_ratio)
-                    right_index = min(self.world_width, i + self.inflation_ratio)
-                    self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), -1)
-                    self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
-        map_graph = copy.deepcopy(self.map)
-        for i in range(self.world_height):
-            for ii in range(self.world_width):
-                if map_graph[i, ii] == -1:
-                    print(i, ii)
-                    map_graph[i, ii] = -1000
-        plt.imshow(self.map, cmap='gray', vmin=-1000, vmax=100, interpolation='none')
+                if self.map[i, ii] == 100:
+                    pixel_buffer = ROBOT_SIZE / resolution * self.inflation_ratio
+                    top_index = max(0, i - pixel_buffer)
+                    bottom_index = min(self.world_height, i + pixel_buffer)
+                    left_index = max(0, i - pixel_buffer)
+                    right_index = min(self.world_width, i + pixel_buffer)
+                    self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), 100)
+                    self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100)
+
+        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        plt.show()
+        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
         plt.show()
 
     def _pose_callback(self, msg):

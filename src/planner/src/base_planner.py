@@ -102,6 +102,7 @@ class Planner:
         print(self.map)
         print(self.aug_map)
         map_graph = copy.deepcopy(self.map)
+        print(map_graph)
         for i in range(len(map_graph)):
             for ii in range(len(map_graph[i])):
                 if map_graph[i, ii] == -1:

@@ -100,7 +100,8 @@ class Planner:
                     right_index = min(self.world_width, ii + pixel_buffer)
                     self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), 100)
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100)
-
+        self.aug_map = self.aug_map.T
+        self.map = self.map.T
         plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
         plt.show()
         plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')

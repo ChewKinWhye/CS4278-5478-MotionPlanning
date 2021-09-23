@@ -96,8 +96,8 @@ class Planner:
                     bottom_index = min(self.world_height, i + self.inflation_ratio)
                     left_index = max(0, i - self.inflation_ratio)
                     right_index = min(self.world_width, i + self.inflation_ratio)
-                    self.aug_map[top_index:bottom_index, :] = np.full((bottom_index-top_index), -1)
-                    self.aug_map[left_index:right_index, :] = np.full((right_index - left_index), -1)
+                    self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), -1)
+                    self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
         print(self.map)
         print(self.aug_map)
 

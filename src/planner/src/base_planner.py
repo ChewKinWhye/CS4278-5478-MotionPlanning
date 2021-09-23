@@ -102,8 +102,8 @@ class Planner:
         print(self.map)
         print(self.aug_map)
         self.map_graph = copy.deepcopy(self.map)
-        for i in len(self.map_graph):
-            for ii in len(self.map_graph[i]):
+        for i in range(len(self.map_graph)):
+            for ii in range(len(self.map_graph[i])):
                 if self.map_graph[i, ii] == -1:
                     self.map_graph = -100
         plt.imshow(self.map, cmap='gray', vmin=-100, vmax=100, interpolation='none')

@@ -10,6 +10,7 @@ from math import *
 import copy
 import argparse
 import matplotlib.pyplot as plt
+import heapq
 
 ROBOT_SIZE = 0.2552  # width and height of robot in terms of stage unit
 
@@ -102,10 +103,10 @@ class Planner:
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100)
         self.aug_map = self.aug_map[::-1]
         self.map = self.map[::-1]
-        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
-        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
+        # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
+        # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS
@@ -211,6 +212,8 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
+        priority_queue = [(0, self.get_current_discrete_state())]
+        print(priority_queue)
         self.action_seq = []
 
     def get_current_continuous_state(self):

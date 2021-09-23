@@ -104,10 +104,10 @@ class Planner:
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100, np.int)
         self.aug_map = self.aug_map
         self.map = self.map[::-1]
-        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
-        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
+        # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
+        # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS

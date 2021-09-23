@@ -64,10 +64,10 @@ class Planner:
         self.sb_obs = rospy.Subscriber('/scan', LaserScan, self._obs_callback)
         self.sb_pose = rospy.Subscriber(
             '/base_pose_ground_truth', Odometry, self._pose_callback)
-        print("self.sb_pose: ", self.sb_pose)
+        # print("self.sb_pose: ", self.sb_pose)
         self.sb_goal = rospy.Subscriber(
             '/move_base_simple/goal', PoseStamped, self._goal_callback)
-        print("self.sb_goal: ", self.sb_goal)
+        # print("self.sb_goal: ", self.sb_goal)
         self.controller = rospy.Publisher(
             '/mobile_base/commands/velocity', Twist, queue_size=10)
         rospy.sleep(1)
@@ -86,8 +86,21 @@ class Planner:
         print(map_values)
         # TODO: FILL ME! implement obstacle inflation function and define self.aug_map = new_mask
 
+        self.map = np.array(self.map).reshape((self.world_height, self.world_width))
         # you should inflate the map to get self.aug_map
         self.aug_map = copy.deepcopy(self.map)
+        for i in range(self.world_height):
+            for ii in range(self.world_width):
+                if self.map[i, ii] == -1:
+                    top_index = max(0, i - self.inflation_ratio)
+                    bottom_index = min(self.world_height, i + self.inflation_ratio)
+                    left_index = max(0, i - self.inflation_ratio)
+                    right_index = min(self.world_width, i + self.inflation_ratio)
+                    self.aug_map[top_index:bottom_index, :] = np.full((bottom_index-top_index), -1)
+                    self.aug_map[left_index:right_index, :] = np.full((right_index - left_index), -1)
+        print(self.map)
+        print(self.aug_map)
+
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS
@@ -96,11 +109,11 @@ class Planner:
             msg {Odometry} -- pose of the robot from ROS
         """
         self.pose = msg
-        print("self.pose: ", self.pose)
+        #print("self.pose: ", self.pose)
 
     def _goal_callback(self, msg):
         self.goal = msg
-        print("self.goal: ", self.goal)
+        #print("self.goal: ", self.goal)
         self.generate_plan()
 
     def _get_goal_position(self):

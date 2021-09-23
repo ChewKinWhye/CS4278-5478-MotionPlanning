@@ -101,7 +101,7 @@ class Planner:
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
         print(self.map)
         print(self.aug_map)
-        plt.imshow(self.map, cmap='gray', vmin=-100, vmax=0, interpolation='none')
+        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
         plt.show()
 
     def _pose_callback(self, msg):

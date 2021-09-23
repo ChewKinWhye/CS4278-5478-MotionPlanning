@@ -399,7 +399,7 @@ if __name__ == "__main__":
     print("Finished parsing arguments")
 
     # TODO: You should change this value accordingly
-    inflation_ratio = 3
+    inflation_ratio = 1.5
     planner = Planner(width, height, resolution, inflation_ratio=inflation_ratio)
     print("Done Initialization")
 

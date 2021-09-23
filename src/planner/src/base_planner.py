@@ -212,9 +212,15 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
+        actions = [(1, 0), (0, 1), (0, -1)]
         priority_queue = [(0, self.get_current_discrete_state())]
         print(priority_queue)
-        self.action_seq = []
+        while len(priority_queue) != 0:
+            node = heapq.headpop(priority_queue)
+            for action in actions:
+                next_state = self.discrete_motion_predict(node[1][0], node[1][1], node[1][2], action[0], action[1])
+                print(next_state)
+
 
     def get_current_continuous_state(self):
         """Our state is defined to be the tuple (x,y,theta). 

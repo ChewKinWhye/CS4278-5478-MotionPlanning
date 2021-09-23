@@ -101,7 +101,7 @@ class Planner:
                     right_index = min(self.world_width, ii + pixel_buffer)
                     self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), 100)
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100)
-        self.aug_map = self.aug_map[::-1]
+        self.aug_map = self.aug_map
         self.map = self.map[::-1]
         # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
         # plt.show()
@@ -213,14 +213,18 @@ class Planner:
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
         actions = [(1, 0), (0, 1), (0, -1)]
-        priority_queue = [(0, self.get_current_discrete_state())]
+        priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state())]
+        visited_states = set()
         print(priority_queue)
         while len(priority_queue) != 0:
             node = heapq.heappop(priority_queue)
             for action in actions:
                 next_state = self.discrete_motion_predict(node[1][0], node[1][1], node[1][2], action[0], action[1])
-                print(next_state)
-
+                if next_state not in visited_states and not self.collision_checker(next_state[0], next_state[1]):
+                    visited_states.add(next_state)
+                    next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state)
+                    heapq.heappush(priority_queue, next_node)
+        print(priority_queue)
 
     def get_current_continuous_state(self):
         """Our state is defined to be the tuple (x,y,theta). 
@@ -264,7 +268,8 @@ class Planner:
         Returns:
             bool -- True for collision, False for non-collision
         """
-
+        if self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100:
+            return True
         return False
 
     def motion_predict(self, x, y, theta, v, w, dt=0.5, frequency=10):

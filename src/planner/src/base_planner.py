@@ -63,15 +63,7 @@ class Planner:
         self.inflation_ratio = inflation_ratio
         print("Calling map_callback()")
         self.map_callback()
-        print(self.collision_checker(2, 2))
-        print(self.collision_checker(2, 3))
-        print(self.collision_checker(2, 4))
-        print(self.collision_checker(2, 5))
 
-        print(self.collision_checker(3, 2))
-        print(self.collision_checker(3, 3))
-        print(self.collision_checker(3, 4))
-        print(self.collision_checker(3, 5))
         self.sb_obs = rospy.Subscriber('/scan', LaserScan, self._obs_callback)
         self.sb_pose = rospy.Subscriber(
             '/base_pose_ground_truth', Odometry, self._pose_callback)
@@ -246,6 +238,7 @@ class Planner:
                 self.action_seq.append(goal_node[3])
                 goal_node = goal_node[4]
         print(self.action_seq)
+        self.action_seq.reverse()
 
     def get_current_continuous_state(self):
         """Our state is defined to be the tuple (x,y,theta). 

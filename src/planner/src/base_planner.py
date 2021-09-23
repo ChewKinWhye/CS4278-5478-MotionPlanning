@@ -101,11 +101,11 @@ class Planner:
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
         print(self.map)
         print(self.aug_map)
-        self.map_graph = copy.deepcopy(self.map)
-        for i in range(len(self.map_graph)):
-            for ii in range(len(self.map_graph[i])):
-                if self.map_graph[i, ii] == -1:
-                    self.map_graph = -100
+        map_graph = copy.deepcopy(self.map)
+        for i in range(len(map_graph)):
+            for ii in range(len(map_graph[i])):
+                if map_graph[i, ii] == -1:
+                    map_graph = -100
         plt.imshow(self.map, cmap='gray', vmin=-100, vmax=100, interpolation='none')
         plt.show()
 

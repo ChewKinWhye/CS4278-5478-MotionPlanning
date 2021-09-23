@@ -93,7 +93,7 @@ class Planner:
         for i in range(self.world_height):
             for ii in range(self.world_width):
                 if self.map[i, ii] == 100:
-                    pixel_buffer = ROBOT_SIZE / resolution * self.inflation_ratio
+                    pixel_buffer = int(ROBOT_SIZE / resolution * self.inflation_ratio)
                     top_index = max(0, i - pixel_buffer)
                     bottom_index = min(self.world_height, i + pixel_buffer)
                     left_index = max(0, i - pixel_buffer)

@@ -213,19 +213,30 @@ class Planner:
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
         actions = [(1, 0), (0, 1), (0, -1)]
-        priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state())]
+        # Node is defined as (f(s), g(s), state, action, parent)
+        priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state(),
+                           None, None)]
         visited_states = set()
         print(priority_queue)
+        goal_node = None
         while len(priority_queue) != 0:
             node = heapq.heappop(priority_queue)
+            if self._check_goal(node[2]):
+                goal_node = node
+                break
             for action in actions:
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
                 if next_state is not None and next_state not in visited_states:
                     visited_states.add(next_state)
-                    next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state)
+                    next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
                     heapq.heappush(priority_queue, next_node)
-            break
-        print(priority_queue)
+
+        self.action_seq = []
+        if goal_node is not None:
+            while goal_node[4] is not None:
+                self.action_seq.append(goal_node[3])
+                goal_node = goal_node[4]
+        print(self.action_seq)
 
     def get_current_continuous_state(self):
         """Our state is defined to be the tuple (x,y,theta). 

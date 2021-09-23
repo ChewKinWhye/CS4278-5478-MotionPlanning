@@ -216,7 +216,7 @@ class Planner:
         priority_queue = [(0, self.get_current_discrete_state())]
         print(priority_queue)
         while len(priority_queue) != 0:
-            node = heapq.headpop(priority_queue)
+            node = heapq.heappop(priority_queue)
             for action in actions:
                 next_state = self.discrete_motion_predict(node[1][0], node[1][1], node[1][2], action[0], action[1])
                 print(next_state)

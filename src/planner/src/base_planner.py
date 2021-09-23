@@ -103,9 +103,9 @@ class Planner:
         print(self.aug_map)
         map_graph = copy.deepcopy(self.map)
         print(map_graph)
-        for i in range(len(map_graph)):
-            for ii in range(len(map_graph[i])):
-                if map_graph[i][ii] == -1:
+        for i in range(self.world_height):
+            for ii in range(self.world_width):
+                if map_graph[i, ii] == -1:
                     map_graph = -100
         plt.imshow(self.map, cmap='gray', vmin=-100, vmax=100, interpolation='none')
         plt.show()

@@ -9,6 +9,7 @@ from const import *
 from math import *
 import copy
 import argparse
+import matplotlib.pyplot as plt
 
 ROBOT_SIZE = 0.2552  # width and height of robot in terms of stage unit
 
@@ -100,7 +101,8 @@ class Planner:
                     self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), -1)
         print(self.map)
         print(self.aug_map)
-
+        plt.imshow(self.map, cmap='gray', vmin=-100, vmax=0, interpolation='none')
+        plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS

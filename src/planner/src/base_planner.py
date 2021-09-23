@@ -213,6 +213,7 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
+        print("Generating Plan")
         actions = [(1, 0), (0, 1), (0, -1)]
         # Node is defined as (f(s), g(s), state, action, parent)
         priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state(),

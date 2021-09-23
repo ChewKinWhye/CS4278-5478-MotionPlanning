@@ -64,8 +64,10 @@ class Planner:
         self.sb_obs = rospy.Subscriber('/scan', LaserScan, self._obs_callback)
         self.sb_pose = rospy.Subscriber(
             '/base_pose_ground_truth', Odometry, self._pose_callback)
+        print(f"self.sb_pose: {self.sb_pose}")
         self.sb_goal = rospy.Subscriber(
             '/move_base_simple/goal', PoseStamped, self._goal_callback)
+        print(f"self.sb_goal: {self.sb_goal}")
         self.controller = rospy.Publisher(
             '/mobile_base/commands/velocity', Twist, queue_size=10)
         rospy.sleep(1)
@@ -94,9 +96,11 @@ class Planner:
             msg {Odometry} -- pose of the robot from ROS
         """
         self.pose = msg
+        print(f"self.pose: {self.pose}")
 
     def _goal_callback(self, msg):
         self.goal = msg
+        print(f"self.goal: {self.goal}")
         self.generate_plan()
 
     def _get_goal_position(self):
@@ -366,7 +370,7 @@ if __name__ == "__main__":
         goal = [int(pose) for pose in args.goal.split(',')]
     except:
         raise ValueError("Please enter correct goal format")
-
+    print(f"Goal: {goal}")
     if args.com:
         width = 2500
         height = 983

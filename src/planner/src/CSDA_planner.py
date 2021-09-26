@@ -86,7 +86,6 @@ class Planner:
                 map_values[value] += 1
             else:
                 map_values[value] = 1
-        print(map_values)
         # TODO: FILL ME! implement obstacle inflation function and define self.aug_map = new_mask
 
         self.map = np.array(self.map).reshape((self.world_height, self.world_width))
@@ -214,7 +213,7 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
-        step_size = 0.5
+        step_size = 0.2
         # actions contains all combinations of velocity and angular velocity
         actions = []
         for velocity in np.arange(0, 1+step_size, step_size).tolist():
@@ -247,7 +246,7 @@ class Planner:
                             self._d_from_goal(next_state) + node[1] + 1 < visited_states[next_state]:
                         next_node = (self._d_from_goal(next_state) + node[1] + 1, node[1] + 1, next_state, action, node)
                         heapq.heappush(priority_queue, next_node)
-        print("Visited states:", visited_states)
+        print("Visited states:", len(visited_states))
         print("Counter: ", counter)
         self.action_seq = []
         if goal_node is not None:

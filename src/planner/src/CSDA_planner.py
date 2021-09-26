@@ -233,6 +233,7 @@ class Planner:
         while len(priority_queue) != 0:
             counter += 1
             node = heapq.heappop(priority_queue)
+            print(node)
             if self._check_goal(node[2]):
                 goal_node = node
                 break

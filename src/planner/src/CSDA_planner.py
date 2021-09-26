@@ -236,10 +236,10 @@ class Planner:
                 goal_node = node
                 break
             # Check if discretized state is in visited state
-            if self.discrete_to_continuous(node[2]) in visited_states and \
-                    node[0] >= visited_states[self.discrete_to_continuous(node[2])]:
+            if self.continuous_to_resolution(node[2]) in visited_states and \
+                    node[0] >= visited_states[self.continuous_to_resolution(node[2])]:
                 continue
-            visited_states[self.discrete_to_continuous(node[2])] = node[0]
+            visited_states[self.continuous_to_resolution(node[2])] = node[0]
             for action in actions:
                 next_state = self.motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
                 if next_state is not None:
@@ -278,10 +278,10 @@ class Planner:
                          (ori[1] ** 2 + ori[2] ** 2))
         return (x, y, phi)
 
-    def discrete_to_continuous(self, continuous_state):
+    def continuous_to_resolution(self, continuous_state):
         x, y, phi = continuous_state
-        def rd(x): return int(round(x))
-        discrete_state = (rd(x), rd(y), rd(phi / (np.pi / 2)))
+        def round_partial(x): return round(x/self.resolution)*self.resolution
+        discrete_state = (round_partial(x), round_partial(y), round_partial(phi / (np.pi / 2)))
         return discrete_state
 
     def get_current_discrete_state(self):

@@ -235,7 +235,8 @@ class Planner:
                 goal_node = node
                 break
             # Check if discretized state is in visited state
-            if node[0] >= visited_states[self.discrete_to_continuous(node[2])]:
+            if self.discrete_to_continuous(node[2]) in visited_states and \
+                    node[0] >= visited_states[self.discrete_to_continuous(node[2])]:
                 continue
             visited_states[self.discrete_to_continuous(node[2])] = node[0]
             for action in actions:

@@ -229,10 +229,10 @@ class Planner:
                 break
             if node[2] in visited_states:
                 continue
+            visited_states.add(node[2])
             for action in actions:
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
                 if next_state is not None and next_state not in visited_states:
-                    visited_states.add(next_state)
                     next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
                     heapq.heappush(priority_queue, next_node)
 

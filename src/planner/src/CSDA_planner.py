@@ -95,19 +95,21 @@ class Planner:
         pixel_buffer = int((ROBOT_SIZE / 2) / resolution * self.inflation_ratio)
         for i in range(self.world_height):
             for ii in range(self.world_width):
-                if self.map[i, ii] == 100 or i == 0 or i == self.world_height-1 or ii == 0 or ii == self.world_width-1:
+                if self.map[
+                    i, ii] == 100 or i == 0 or i == self.world_height - 1 or ii == 0 or ii == self.world_width - 1:
                     top_index = max(0, i - pixel_buffer)
                     bottom_index = min(self.world_height, i + pixel_buffer)
                     left_index = max(0, ii - pixel_buffer)
                     right_index = min(self.world_width, ii + pixel_buffer)
-                    self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), 100, np.int)
-                    self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100, np.int)
+                    for height_inflate in range(top_index, bottom_index):
+                        for width_inflate in range(left_index, right_index):
+                            self.aug_map[height_inflate, width_inflate] = 100
         self.aug_map = self.aug_map
         self.map = self.map[::-1]
-        # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        # plt.show()
-        # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        # plt.show()
+        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        plt.show()
+        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS
@@ -116,11 +118,11 @@ class Planner:
             msg {Odometry} -- pose of the robot from ROS
         """
         self.pose = msg
-        #print("self.pose: ", self.pose)
+        # print("self.pose: ", self.pose)
 
     def _goal_callback(self, msg):
         self.goal = msg
-        #print("self.goal: ", self.goal)
+        # print("self.goal: ", self.goal)
         self.generate_plan()
 
     def _get_goal_position(self):
@@ -161,7 +163,7 @@ class Planner:
             float -- distance to the goal
         """
         goal = self._get_goal_position()
-        return sqrt((pose[0] - goal[0])**2 + (pose[1] - goal[1])**2)
+        return sqrt((pose[0] - goal[0]) ** 2 + (pose[1] - goal[1]) ** 2)
 
     def _check_goal(self, pose):
         """Simple goal checking criteria, which only requires the current position is less than 0.25 from the goal position. The orientation is ignored
@@ -226,11 +228,13 @@ class Planner:
             if self._check_goal(node[2]):
                 goal_node = node
                 break
+            if node[2] in visited_states:
+                continue
+            visited_states.add(node[2])
             for action in actions:
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
                 if next_state is not None and next_state not in visited_states:
-                    visited_states.add(next_state)
-                    next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
+                    next_node = (self._d_from_goal(next_state) + node[1] + 1, node[1] + 1, next_state, action, node)
                     heapq.heappush(priority_queue, next_node)
 
         self.action_seq = []
@@ -242,8 +246,8 @@ class Planner:
         self.action_seq.reverse()
 
     def get_current_continuous_state(self):
-        """Our state is defined to be the tuple (x,y,theta). 
-        x and y are directly extracted from the pose information. 
+        """Our state is defined to be the tuple (x,y,theta).
+        x and y are directly extracted from the pose information.
         Theta is the rotation of the robot on the x-y plane, extracted from the pose quaternion. For our continuous problem, we consider angles in radians
 
         Returns:
@@ -260,30 +264,32 @@ class Planner:
         return (x, y, phi)
 
     def get_current_discrete_state(self):
-        """Our state is defined to be the tuple (x,y,theta). 
-        x and y are directly extracted from the pose information. 
+        """Our state is defined to be the tuple (x,y,theta).
+        x and y are directly extracted from the pose information.
         Theta is the rotation of the robot on the x-y plane, extracted from the pose quaternion. For our continuous problem, we consider angles in radians
 
         Returns:
             tuple -- x, y, \theta of the robot in discrete space, e.g., (1, 1, 1) where the robot is facing north
         """
         x, y, phi = self.get_current_continuous_state()
+
         def rd(x): return int(round(x))
+
         return rd(x), rd(y), rd(phi / (np.pi / 2))
 
     def collision_checker(self, x, y):
         """TODO: FILL ME!
         You should implement the collision checker.
         Hint: you should consider the augmented map and the world size
-        
+
         Arguments:
             x {float} -- current x of robot
             y {float} -- current y of robot
-        
+
         Returns:
             bool -- True for collision, False for non-collision
         """
-        if self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100:
+        if self.aug_map[int(y / self.resolution), int(x / self.resolution)] == 100:
             return True
         return False
 
@@ -311,12 +317,12 @@ class Planner:
         for i in range(num_steps):
             if w != 0:
                 dx = - v / w * np.sin(theta) + v / w * \
-                    np.sin(theta + w / frequency)
+                     np.sin(theta + w / frequency)
                 dy = v / w * np.cos(theta) - v / w * \
-                    np.cos(theta + w / frequency)
+                     np.cos(theta + w / frequency)
             else:
-                dx = v*np.cos(theta)/frequency
-                dy = v*np.sin(theta)/frequency
+                dx = v * np.cos(theta) / frequency
+                dy = v * np.sin(theta) / frequency
             x += dx
             y += dy
 
@@ -346,8 +352,8 @@ class Planner:
         Returns:
             tuple -- next x, y, theta; return None if has collision
         """
-        w_radian = w * np.pi/2
-        first_step = self.motion_predict(x, y, theta*np.pi/2, v, w_radian)
+        w_radian = w * np.pi / 2
+        first_step = self.motion_predict(x, y, theta * np.pi / 2, v, w_radian)
         if first_step:
             second_step = self.motion_predict(
                 first_step[0], first_step[1], first_step[2], v, w_radian)
@@ -368,7 +374,7 @@ class Planner:
         """
         for action in self.action_seq:
             msg = self.create_control_msg(
-                action[0], 0, 0, 0, 0, action[1]*np.pi/2)
+                action[0], 0, 0, 0, 0, action[1] * np.pi / 2)
             self.controller.publish(msg)
             rospy.sleep(0.6)
             self.controller.publish(msg)

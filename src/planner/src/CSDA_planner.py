@@ -235,10 +235,11 @@ class Planner:
                 goal_node = node
                 break
             # Check if discretized state is in visited state
-            if self.continuous_to_resolution(node[2]) in visited_states and \
-                    node[0] >= visited_states[self.continuous_to_resolution(node[2])]:
+            discretized_state = self.continuous_to_resolution(node[2])
+            if discretized_state in visited_states and \
+                    node[0] >= visited_states[discretized_state]:
                 continue
-            visited_states[self.continuous_to_resolution(node[2])] = node[0]
+            visited_states[discretized_state] = node[0]
             for action in actions:
                 next_state = self.motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
                 if next_state is not None:

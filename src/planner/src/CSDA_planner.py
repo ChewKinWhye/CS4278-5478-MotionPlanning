@@ -60,7 +60,7 @@ class Planner:
         self.world_width = world_width
         self.world_height = world_height
         self.resolution = world_resolution
-        self.search_resolution = self.resolution * 5
+        self.search_resolution = self.resolution * 2
         self.inflation_ratio = inflation_ratio
         print("Calling map_callback()")
         self.map_callback()

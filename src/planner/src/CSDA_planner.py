@@ -214,12 +214,11 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
-        step_size = 0.5
+        step_size = 0.628
         # actions contains all combinations of velocity and angular velocity
         actions = []
-        for velocity in np.arange(0, 1+step_size, step_size).tolist():
-            for angular_velocity in np.arange(0, 1 + step_size, step_size).tolist():
-                actions.append((velocity, angular_velocity))
+        for angular_velocity in np.arange(-3.14, 3.14001, step_size).tolist():
+            actions.append((1, angular_velocity))
         print("Length of action: ", len(actions))
         print("Generating Plan")
 

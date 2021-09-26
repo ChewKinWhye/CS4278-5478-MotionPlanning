@@ -95,8 +95,7 @@ class Planner:
         pixel_buffer = int((ROBOT_SIZE / 2) / resolution * self.inflation_ratio)
         for i in range(self.world_height):
             for ii in range(self.world_width):
-                if self.map[
-                    i, ii] == 100 or i == 0 or i == self.world_height - 1 or ii == 0 or ii == self.world_width - 1:
+                if self.map[i, ii] == 100 or i == 0 or i == self.world_height - 1 or ii == 0 or ii == self.world_width - 1:
                     top_index = max(0, i - pixel_buffer)
                     bottom_index = min(self.world_height, i + pixel_buffer)
                     left_index = max(0, ii - pixel_buffer)
@@ -215,12 +214,19 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
+        step_size = 0.1
+        # actions contains all combinations of velocity and angular velocity
+        actions = []
+        for velocity in np.arange(0, 1+step_size, step_size).tolist():
+            for angular_velocity in np.arange(0, 1 + step_size, step_size).tolist():
+                actions.append((velocity, angular_velocity))
+
         print("Generating Plan")
-        actions = [(1, 0), (0, 1), (0, -1)]
+
         # Node is defined as (f(s), g(s), state, action, parent)
-        priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state(),
+        priority_queue = [(self._d_from_goal(self.get_current_continuous_state()), 0, self.get_current_continuous_state(),
                            None, None)]
-        visited_states = set()
+        visited_states = {}
         print(priority_queue)
         goal_node = None
         while len(priority_queue) != 0:
@@ -228,14 +234,17 @@ class Planner:
             if self._check_goal(node[2]):
                 goal_node = node
                 break
-            if node[2] in visited_states:
+            # Check if discretized state is in visited state
+            if node[0] >= visited_states[self.discrete_to_continuous(node[2])]:
                 continue
-            visited_states.add(node[2])
+            visited_states[self.discrete_to_continuous(node[2])] = node[0]
             for action in actions:
-                next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
-                if next_state is not None and next_state not in visited_states:
-                    next_node = (self._d_from_goal(next_state) + node[1] + 1, node[1] + 1, next_state, action, node)
-                    heapq.heappush(priority_queue, next_node)
+                next_state = self.motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
+                if next_state is not None:
+                    if next_state not in visited_states or \
+                            self._d_from_goal(next_state) + node[1] + 1 < visited_states[next_state]:
+                        next_node = (self._d_from_goal(next_state) + node[1] + 1, node[1] + 1, next_state, action, node)
+                        heapq.heappush(priority_queue, next_node)
 
         self.action_seq = []
         if goal_node is not None:
@@ -262,6 +271,12 @@ class Planner:
         phi = np.arctan2(2 * (ori[0] * ori[1] + ori[2] * ori[3]), 1 - 2 *
                          (ori[1] ** 2 + ori[2] ** 2))
         return (x, y, phi)
+
+    def discrete_to_continuous(self, continuous_state):
+        x, y, phi = continuous_state
+        def rd(x): return int(round(x))
+        discrete_state = (rd(x), rd(y), rd(phi / (np.pi / 2)))
+        return discrete_state
 
     def get_current_discrete_state(self):
         """Our state is defined to be the tuple (x,y,theta).
@@ -443,7 +458,7 @@ if __name__ == "__main__":
         planner.generate_plan()
 
     # You could replace this with other control publishers
-    planner.publish_discrete_control()
+    planner.publish_control()
 
     # save your action sequence
     result = np.array(planner.action_seq)

@@ -100,14 +100,15 @@ class Planner:
                     bottom_index = min(self.world_height, i + pixel_buffer)
                     left_index = max(0, ii - pixel_buffer)
                     right_index = min(self.world_width, ii + pixel_buffer)
-                    self.aug_map[top_index:bottom_index, ii] = np.full((bottom_index-top_index), 100, np.int)
-                    self.aug_map[i, left_index:right_index] = np.full((right_index - left_index), 100, np.int)
+                    for height_inflate in range(top_index, bottom_index):
+                        for width_inflate in range(left_index, right_index):
+                            self.aug_map[height_inflate, width_inflate] = 100
         self.aug_map = self.aug_map
         self.map = self.map[::-1]
-        # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        # plt.show()
-        # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        # plt.show()
+        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        plt.show()
+        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS

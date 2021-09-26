@@ -1,63 +1,72 @@
-# CS4278/CS5478 Lab 1: Motion Planning for Mobile Robots
+# CS4278/CS5478 Lab 1 Motion Planning for Mobile Robots
 
 
-## Setup the environment
-
-We developed the simulator using ROS Kinetic. The simulator is adjusted from [ROS TurtleBot Stage package](http://wiki.ros.org/turtlebot_stage). As your first step, you should install the ROS kinetic according to assignment 1. After installation, install TurtleBot Stage with
+## Simulator Installation and Setup
+In Lab 1pre, you have already installed ROS Kinetic. The *FoodTutrle* simulator for this lab is adapted from the [ROS TurtleBot Stage](http://wiki.ros.org/turtlebot_stage) package.
+Install TurtleBot Stage:
 ```
 sudo apt install ros-kinetic-turtlebot-stage
 sudo apt install ros-kinetic-joint-state-publisher-gui
 ```
 
-Next, clone our repo and setup your environment with
+Clone this repository and set up the environment:
 ```
+git clone https://github.com/AdaCompNUS/CS4278-5478-MotionPlanning
+cd CS4278-5478-MotionPlanning
 catkin_make
 source devel/setup.bash
 ```
+If you use the ROS docker, you may need to make a [docker commit](https://docs.docker.com/engine/reference/commandline/commit/) to save changes. 
 
-Check your setup by 
+Check your setup:
 ```
 roslaunch planner turtlebot_in_stage.launch
 ```
-You should be able to see the RViz and ROS stage. 
+You should see RViz and ROS Stage. 
 
-## What you need to do
-We split the robot navigation task into three parts: simulator, controller and planner. We use a very simple controller defined in the planner file. In this assignment, we provide you with the simulator and all the necessary functions for 1) ROS nodes 2) data communication 3) controlling the robot. You only need to implement the planning algorithms and collision checking mechanism, and fill in the template marked with `# TODO: FILL ME!` in `base_planner.py`. 
+## Code Overview
+The FoodTurtle system consists of three components: the simulator, the planner, and the controller. The code in this repository provides most of these components, including the necessary functions for setting up ROS nodes in the simulator, data communication, and robot control. You will implement the planning algorithm and collision avoidance capabilities by filling in the template labeled `# TODO: FILL ME!` in `base_planner.py`. We recommend that you use `base_planner.py` as a base class and then implement your planners as derived classes.
 
-We would recomment you to use `base_planner.py` as a base class, then impelement your planners as derived classes.
-
-## How to run the code
-
-You can simply use the following instructions to launch the simulator and set the configurations. 
+## Code Execution
+Launch the simulator and execute the planner: 
 ```
 roscd planner/src
 sh run.sh [your map name] start_x start_y start_theta
 python your_planner.py --goal 'goal_x,goal_y' --com use_com_1_map_or_not
 ```
 
-Specifically, suppose we want to load *map1.png*, set the start pose of the robot as (x=2, y=2, \theta=0), and set the goal to be (x'=8, y'=8). You should:
-1. Go into the source directory `roscd planner/src`
-2. Launch the simulator and set the start of the robot `sh run.sh map1.png 1 1 0`
-3. Open a new shell and launch the planner script with goal specified `python your_planner.py --goal '5,5' --com 0`. Here, `--com 0` flag indicates that we are not using the `com1.jpg` map. This is because the environment parameter changes from other maps to the com1 map. 
+For example, load `map1.png` and set the robot start pose as (x=1, y=1, θ=0): 
+```
+roscd planner/src
+sh run.sh map1.png 1 1 0
+```
 
-## Notes
-For visualization,  use ROS stage. RViz provides the 2.5D visualization but has certain noise due to ROS asynchronous communication.
+Set the robot goal as (x=5, y=5) and run the planner:
+```
+python your_planner.py --goal '5,5' --com 0
+```
+The flag `--com`  indicates whether the COM1 map is used, as it requires a special set of environment parameters. 
+
+## Debugging and Visualization
+For visualization, we recommend the ROS Stage. RViz provides 2.5-D visualization, but may be noisy due to the asynchronous communication delay of ROS.
+
+## Performance Evaluation
+A [dataset](./src/planner/maps/) provides 5 maps for evaluation, including 4 hand-crafted maps (`map1.png` to `map4.png`) and a simplified COM1 level-1 floor plan (`com1.jpg`). Each map has a corresponding list of test cases with goals specified [here](./files/goals.json). The robot always starts with the pose (1, 1, 0).
+
+To reduce your work, only map4.png may have a misalignment of less than 10 pixels. You can assume that all other maps are sufficiently accurate.
+
+Evaluate your planners in all test cases under the three models, DSDA, CSDA and DSPA. For DSDA and CSDA, save the control actions in a `txt` file and name it `{task}_{map}_{goal_x}_{goal_y}.txt`. For DSPA, save the MDP control policy in a `json` file and name it `{task}_{map}_{goal_x}_{goal_y}.json`.
+
+
+For example, 
+- DSDA_map2_5_5.txt for DSDA on map2.png with [5, 5] as the goal.
+- CSDA_map3_9_9.txt for CSDA on map3.png with [9, 9] as the goal.
+- DSPA_com1_43_10.json for the MDP policy on com1.jpg with [43, 10] as the goal.
+
+You can find the functions to save the results in base_planner.py. Some examples of control files can be found [here](./files/).
 
 ## Submission
-
-We provide you with 5 maps, including 4 handcrafted maps (map1.png to map4.png) and an illustrative COM1 level 1 floorplan (com1.jpg). You can find them [here](./src/planner/maps/). Each map has a list of corresponding testcases, with the goals specified [here](./files/goals.json). For all cases, we assume the robot starts with pose (1, 1, 0).
-
-You should implement the planners, test them, generate controls for each testcase, and submit all of them. For DSDA and CSDA (task 1 and task 2),  save them in `.txt` files. For DSPA MDP policy (task 3),  save it into a json file. We have provided functions in base_planner.py.
-
-The naming should follow `{task}_{map}_{goal}.txt` for task 1 and task 2; `{task}_{map}_{goal_x}_{goal_y}.json` for task 3. For example, 
-
-- `1_map2_5_5.txt` for the discrete planner on map2.png with [5, 5] as the goal.
-- `2_map3_9_9.txt` for the continuous planner on map3.png with [9, 9] as the goal.
-- `3_com1_43_10.json` for the mdp policy on com1.jpg with [43, 10] as the goal.
-
-Some example control files can be found [here](./files/).
-
-In summary, you should submit a zip file named MatricNo-Lab1.zip with following folders:
-- Code: your code
-- Controls: the control files for each map and each goal
-- Report: your report
+Submit a single zip archive named `{MatricNo}-Lab1.zip`, which contains 3 directories:
+- `Code`: your code
+- `Controls`: the control files for all testcases
+- `Report`: your report

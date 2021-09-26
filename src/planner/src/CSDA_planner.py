@@ -220,7 +220,7 @@ class Planner:
         for velocity in np.arange(0, 1+step_size, step_size).tolist():
             for angular_velocity in np.arange(0, 1 + step_size, step_size).tolist():
                 actions.append((velocity, angular_velocity))
-
+        print("Length of action: ", len(actions))
         print("Generating Plan")
 
         # Node is defined as (f(s), g(s), state, action, parent)
@@ -229,7 +229,9 @@ class Planner:
         visited_states = {}
         print(priority_queue)
         goal_node = None
+        counter = 0
         while len(priority_queue) != 0:
+            counter += 1
             node = heapq.heappop(priority_queue)
             if self._check_goal(node[2]):
                 goal_node = node
@@ -246,7 +248,7 @@ class Planner:
                             self._d_from_goal(next_state) + node[1] + 1 < visited_states[next_state]:
                         next_node = (self._d_from_goal(next_state) + node[1] + 1, node[1] + 1, next_state, action, node)
                         heapq.heappush(priority_queue, next_node)
-
+        print("Counter: ", counter)
         self.action_seq = []
         if goal_node is not None:
             while goal_node[4] is not None:

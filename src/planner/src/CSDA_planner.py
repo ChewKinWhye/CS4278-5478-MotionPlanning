@@ -105,10 +105,10 @@ class Planner:
                             self.aug_map[height_inflate, width_inflate] = 100
         self.aug_map = self.aug_map
         self.map = self.map[::-1]
-        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
-        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
+        # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
+        # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS
@@ -252,7 +252,10 @@ class Planner:
             while goal_node[4] is not None:
                 self.action_seq.append(goal_node[3])
                 goal_node = goal_node[4]
+        else:
+            print("Goal node is none")
         print(self.action_seq)
+
         self.action_seq.reverse()
 
     def get_current_continuous_state(self):

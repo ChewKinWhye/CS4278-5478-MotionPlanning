@@ -227,6 +227,8 @@ class Planner:
             if self._check_goal(node[2]):
                 goal_node = node
                 break
+            if node[2] in visited_states:
+                continue
             for action in actions:
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
                 if next_state is not None and next_state not in visited_states:

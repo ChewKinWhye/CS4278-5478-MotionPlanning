@@ -219,7 +219,7 @@ class Planner:
         actions = []
         for angular_velocity in np.arange(-3.14, 3.14001, step_size).tolist():
             actions.append((1, angular_velocity))
-        print("Length of action: ", len(actions))
+        print("Action: ", actions)
         print("Generating Plan")
 
         # Node is defined as (f(s), g(s), state, action, parent)

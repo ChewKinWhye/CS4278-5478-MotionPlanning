@@ -231,9 +231,7 @@ class Planner:
         goal_node = None
         counter = 0
         while len(priority_queue) != 0:
-            counter += 1
             node = heapq.heappop(priority_queue)
-            print(node)
             if self._check_goal(node[2]):
                 goal_node = node
                 break
@@ -249,6 +247,7 @@ class Planner:
                             self._d_from_goal(next_state) + node[1] + 1 < visited_states[next_state]:
                         next_node = (self._d_from_goal(next_state) + node[1] + 1, node[1] + 1, next_state, action, node)
                         heapq.heappush(priority_queue, next_node)
+        print("Visited states:", len(visited_states))
         print("Counter: ", counter)
         self.action_seq = []
         if goal_node is not None:

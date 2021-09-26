@@ -219,7 +219,7 @@ class Planner:
         # Node is defined as (f(s), g(s), state, action, parent)
         priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state(),
                            None, None)]
-        visited_states = set()
+        visited_states = {}
         print(priority_queue)
         goal_node = None
         while len(priority_queue) != 0:
@@ -227,14 +227,16 @@ class Planner:
             if self._check_goal(node[2]):
                 goal_node = node
                 break
-            if node[2] in visited_states:
+            if node[2] in visited_states and node[0] >= visited_states[node[2]]:
                 continue
-            visited_states.add(node[2])
+            visited_states[node[2]] = node[0]
             for action in actions:
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
-                if next_state is not None and next_state not in visited_states:
-                    next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
-                    heapq.heappush(priority_queue, next_node)
+                if next_state is not None:
+                    if next_state not in visited_states or \
+                            self._d_from_goal(next_state)+node[1]+1 < visited_states[next_state]:
+                        next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
+                        heapq.heappush(priority_queue, next_node)
 
         self.action_seq = []
         if goal_node is not None:

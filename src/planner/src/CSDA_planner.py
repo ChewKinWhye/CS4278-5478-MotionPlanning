@@ -280,7 +280,7 @@ class Planner:
 
     def continuous_to_resolution(self, continuous_state):
         x, y, phi = continuous_state
-        def round_partial(x): return round(x/self.resolution)*self.resolution
+        def round_partial(x): return round(x/self.search_resolution)*self.search_resolution
         discrete_state = (round_partial(x), round_partial(y), round_partial(phi / (np.pi / 2)))
         return discrete_state
 

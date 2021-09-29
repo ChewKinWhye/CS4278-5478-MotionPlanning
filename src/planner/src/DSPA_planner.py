@@ -238,12 +238,9 @@ class Planner:
                     elif self._check_goal(state):
                         current_state_value = 20
                     else:
-                        current_state_value = -self._d_from_goal(state) / distance_penalty_normalization
-                    action_value = 0
+                        current_state_value = -(self._d_from_goal(state) / distance_penalty_normalization)
                     # Obtain value for left and right
                     if action == (0, turning_angle) or action == (0, -turning_angle):
-                        # Give a small penalty for turning
-                        action_value -= 0.1
                         # Obtain action deterministically
                         v, w = action
                     else:
@@ -262,18 +259,27 @@ class Planner:
                         next_state_value = -20
                     else:
                         next_state_value = self.state_values[next_state]
-                    total_value = current_state_value + action_value + 0.95 * next_state_value
+                    total_value = current_state_value + 0.95 * next_state_value
                     if total_value > state_value:
                         state_value = total_value
                 self.state_values[state] = state_value
         print(self.state_values)
+        print(self.state_values[(5, 5, 0)])
+        print(self.state_values[(5, 5, 1)])
+        print(self.state_values[(5, 5, 2)])
+        print(self.state_values[(5, 5, 3)])
+        print("Outside")
+        print(self.state_values[(5, 6, 3)])
+        print(self.state_values[(5, 4, 3)])
+        print(self.state_values[(4, 5, 3)])
+        print(self.state_values[(6, 5, 3)])
+
         for state in states:
             max_value, best_action = -10000000, None
             for action in actions:
                 action_value = 0
                 if action == (0, turning_angle) or action == (0, -turning_angle):
                     # Give a small penalty for turning
-                    action_value -= 0.1
                     # Obtain action deterministically
                     v, w = action
                 else:
@@ -291,7 +297,7 @@ class Planner:
                     next_state_value = -20
                 else:
                     next_state_value = self.state_values[next_state]
-                total_value = action_value + next_state_value
+                total_value = next_state_value
                 if total_value > max_value:
                     max_value = total_value
                     best_action = action

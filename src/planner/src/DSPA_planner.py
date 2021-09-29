@@ -105,10 +105,10 @@ class Planner:
                             self.aug_map[height_inflate, width_inflate] = 100
         self.aug_map = self.aug_map
         self.map = self.map[::-1]
-        plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
-        plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
-        plt.show()
+        # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
+        # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
+        # plt.show()
 
     def _pose_callback(self, msg):
         """get the raw pose of the robot from ROS
@@ -294,7 +294,7 @@ class Planner:
                     max_value = total_value
                     best_action = action
             self.action_table[state] = best_action
-
+        print("Generated plan")
 
     def get_current_continuous_state(self):
         """Our state is defined to be the tuple (x,y,theta). 

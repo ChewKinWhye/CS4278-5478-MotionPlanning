@@ -108,7 +108,7 @@ class Planner:
                             for width_inflate in range(left_index, right_index):
                                 self.aug_map[height_inflate, width_inflate] = 100
         if self.com and not os.path.exists("com1_augmap.dat"):
-                self.aug_map.tofile('com1_augmap.dat', dtype=int)
+                self.aug_map.tofile('com1_augmap.dat')
         self.map = self.map[::-1]
         # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
         # plt.show()

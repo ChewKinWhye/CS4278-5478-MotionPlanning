@@ -90,7 +90,7 @@ class Planner:
                 map_values[value] = 1
         print(map_values)
         # TODO: FILL ME! implement obstacle inflation function and define self.aug_map = new_mask
-        if self.com and os.path.exists("com1_augmap.dat"):
+        if self.com and os.path.exists("com1_augmap.npy"):
             self.aug_map = np.load("com1_augmap.npy")
         else:
             self.map = np.array(self.map).reshape((self.world_height, self.world_width))
@@ -107,7 +107,7 @@ class Planner:
                         for height_inflate in range(top_index, bottom_index):
                             for width_inflate in range(left_index, right_index):
                                 self.aug_map[height_inflate, width_inflate] = 100
-        if self.com and not os.path.exists("com1_augmap.dat"):
+        if self.com and not os.path.exists("com1_augmap.npy"):
             np.save('com1_augmap.npy', self.aug_map)
 
         self.map = self.map[::-1]

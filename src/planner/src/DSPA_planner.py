@@ -466,7 +466,7 @@ class Planner:
             self.controller.publish(msg)
             rospy.sleep(0.6)
             time.sleep(1)
-
+        print("Reached Goal")
 
 if __name__ == "__main__":
     # TODO: You can run the code using the code below

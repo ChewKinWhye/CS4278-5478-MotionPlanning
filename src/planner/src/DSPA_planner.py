@@ -265,6 +265,7 @@ class Planner:
                     total_value = current_state_value + action_value + 0.95 * next_state_value
                     if total_value > state_value:
                         state_value = total_value
+        print(self.state_values)
         for state in states:
             max_value, best_action = -10000000, None
             for action in actions:

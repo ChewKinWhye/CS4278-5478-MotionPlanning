@@ -268,7 +268,7 @@ class Planner:
             self.state_values[state] = 0
 
         # 200 update steps
-        for i in range(300):
+        for i in range(100):
             # Update every state at each step
             for state in states:
                 state_value = -10000000

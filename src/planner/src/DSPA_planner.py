@@ -318,7 +318,7 @@ class Planner:
                     else:
                         next_state_value += self.state_values[next_state] * 0.05
 
-                    next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
+                    next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, -1)
                     if next_state is None:
                         next_state_value += -80 * 0.05
                     else:

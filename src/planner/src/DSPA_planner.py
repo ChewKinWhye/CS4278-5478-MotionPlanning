@@ -223,7 +223,7 @@ class Planner:
         states = []
         for height in range(-1, int(self.world_height * self.resolution)+2):
             for width in range(-1, int(self.world_width * self.resolution)+2):
-                for theta in [-1, 0, 1]:
+                for theta in range(4):
                     states.append((height, width, theta))
         # Initialize all values to 0
         self.state_values = {}

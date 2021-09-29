@@ -11,6 +11,7 @@ import copy
 import argparse
 import matplotlib.pyplot as plt
 import heapq
+import json
 
 ROBOT_SIZE = 0.2552  # width and height of robot in terms of stage unit
 

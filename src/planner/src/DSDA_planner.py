@@ -463,6 +463,6 @@ if __name__ == "__main__":
     print(2)
     # for MDP, please dump your policy table into a json file
     # dump_action_table(planner.action_table, 'mdp_policy.json')
-
+    print(planner.action_seq)
     # spin the ros
     rospy.spin()

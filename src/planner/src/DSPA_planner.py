@@ -58,7 +58,10 @@ class Planner:
         self.aug_map = None  # occupancy grid with inflation
         self.action_table = {}
         self.com = com
-
+        if com:
+            self.crash_penalty = -20
+        else:
+            self.crash_penalty = -40
         self.world_width = world_width
         self.world_height = world_height
         self.resolution = world_resolution
@@ -212,7 +215,7 @@ class Planner:
 
     def get_current_state_value(self, state):
         if self.collision_checker(state[0], state[1]):
-            current_state_value = -20
+            current_state_value = self.crash_penalty
         elif self._check_goal(state):
             current_state_value = 20
         else:
@@ -221,7 +224,7 @@ class Planner:
 
     def get_next_state_value(self, next_state):
         if next_state is None:
-            next_state_value = -20
+            next_state_value = self.crash_penalty
         else:
             next_state_value = self.state_values[next_state]
         return next_state_value
@@ -266,9 +269,12 @@ class Planner:
         self.state_values = {}
         for state in states:
             self.state_values[state] = 0
-
+        if self.com:
+            steps = 100
+        else:
+            steps = 200
         # 200 update steps
-        for i in range(100):
+        for i in range(steps):
             # Update every state at each step
             for state in states:
                 state_value = -10000000

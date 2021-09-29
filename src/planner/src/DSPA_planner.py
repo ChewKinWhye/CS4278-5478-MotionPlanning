@@ -335,9 +335,9 @@ class Planner:
         Returns:
             bool -- True for collision, False for non-collision
         """
-        if self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100 or \
-                int(y/self.resolution) < 0 or int(y/self.resolution) > self.world_height or \
-                int(x/self.resolution) < 0 or int(x/self.resolution) > self.world_width:
+        if int(y/self.resolution) < 0 or int(y/self.resolution) > self.world_height or \
+           int(x/self.resolution) < 0 or int(x/self.resolution) > self.world_width or \
+           self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100:
             return True
         return False
 

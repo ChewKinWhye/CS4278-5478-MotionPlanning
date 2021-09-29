@@ -271,7 +271,7 @@ class Planner:
                         else:
                             next_state_value += self.state_values[next_state] * 0.05
 
-                    total_value = current_state_value + 0.95 * next_state_value
+                    total_value = current_state_value + 0.98 * next_state_value
                     if total_value > state_value:
                         state_value = total_value
                 self.state_values[state] = state_value

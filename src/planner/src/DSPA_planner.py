@@ -240,18 +240,7 @@ class Planner:
                     else:
                         current_state_value = -(self._d_from_goal(state) / distance_penalty_normalization)
                     # Obtain value for left and right
-                    if action == (0, turning_angle) or action == (0, -turning_angle):
-                        # Obtain action deterministically
-                        v, w = action
-                    else:
-                        # Obtain action probabilistically
-                        r = np.random.rand()
-                        if r < 0.9:
-                            v, w = (1, 0)
-                        elif r < 0.95:
-                            v, w = (np.pi / 2, 1)
-                        else:
-                            v, w = (np.pi / 2, -1)
+                    v, w = action
 
                     x, y, theta = state
                     next_state = self.discrete_motion_predict(x, y, theta, v, w)

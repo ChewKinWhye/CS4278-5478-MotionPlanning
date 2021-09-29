@@ -229,7 +229,7 @@ class Planner:
         self.state_values = {}
         for state in states:
             self.state_values[state] = 0
-        for i in range(100):
+        for i in range(500):
             for state in states:
                 state_value = -10000000
                 for action in actions:

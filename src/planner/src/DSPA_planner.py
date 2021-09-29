@@ -503,7 +503,7 @@ if __name__ == "__main__":
 
     # TODO: You should change this value accordingly
     inflation_ratio = 2
-    planner = Planner(width, height, resolution, inflation_ratio=inflation_ratio)
+    planner = Planner(width, height, resolution, inflation_ratio=inflation_ratio, com=args.com)
     print("Done Initialization")
 
     planner.set_goal(goal[0], goal[1])

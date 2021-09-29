@@ -293,7 +293,7 @@ class Planner:
                 if total_value > max_value:
                     max_value = total_value
                     best_action = action
-            self.action_table[state] = best_action
+            self.action_table["{},{},{}".format(state[0], state[1], state[2] % 4)] = best_action
         print("Generated plan")
 
     def get_current_continuous_state(self):

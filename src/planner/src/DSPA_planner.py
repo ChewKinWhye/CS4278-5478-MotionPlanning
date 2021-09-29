@@ -482,6 +482,8 @@ if __name__ == "__main__":
                         help='goal position')
     parser.add_argument('--com', type=int, default=0,
                         help="if the map is com1 map")
+    parser.add_argument('--map', type=str, default="map1",
+                        help="if the map is com1 map")
     args = parser.parse_args()
 
     try:

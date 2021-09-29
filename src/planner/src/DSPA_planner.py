@@ -236,7 +236,7 @@ class Planner:
                     if self.collision_checker(state[0], state[1]):
                         current_state_value = -20
                     elif self._check_goal(state):
-                        current_state_value = -20
+                        current_state_value = 20
                     else:
                         current_state_value = -self._d_from_goal(state) / distance_penalty_normalization
                     action_value = 0

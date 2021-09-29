@@ -257,10 +257,10 @@ class Planner:
         self.action_table = {}
         actions = [(1, 0), (0, 1), (0, -1)]
         states = []
-        for height in range(-1, int(self.world_height * self.resolution)+2):
-            for width in range(-1, int(self.world_width * self.resolution)+2):
+        for height in range(0, int(self.world_height * self.resolution)+1):
+            for width in range(0, int(self.world_width * self.resolution)+1):
                 for theta in range(4):
-                    states.append((height, width, theta))
+                    states.append((width, height, theta))
         print(len(states))
         # Initialize all values to 0
         self.state_values = {}

@@ -273,6 +273,10 @@ class Planner:
         print(self.state_values[(5, 4, 3)])
         print(self.state_values[(4, 5, 3)])
         print(self.state_values[(6, 5, 3)])
+        print(self.state_values[(3, 5, 0)])
+        print(self.state_values[(3, 5, 1)])
+        print(self.state_values[(3, 5, 2)])
+        print(self.state_values[(3, 5, 3)])
 
         for state in states:
             max_value, best_action = -10000000, None

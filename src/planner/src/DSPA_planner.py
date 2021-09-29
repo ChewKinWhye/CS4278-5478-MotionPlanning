@@ -277,9 +277,9 @@ class Planner:
                 else:
                     # Obtain action probabilistically
                     r = np.random.rand()
-                    if r < 0.6:
+                    if r < 0.9:
                         v, w = (1, 0)
-                    elif r < 0.8:
+                    elif r < 0.95:
                         v, w = (np.pi / 2, 1)
                     else:
                         v, w = (np.pi / 2, -1)

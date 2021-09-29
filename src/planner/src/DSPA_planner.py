@@ -504,7 +504,6 @@ if __name__ == "__main__":
 
     # You could replace this with other control publishers
     planner.publish_stochastic_control()
-    print("Loop out")
     # save your action sequence
     # result = np.array(planner.action_seq)
     # np.savetxt("actions_continuous.txt", result, fmt="%.2e")

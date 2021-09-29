@@ -216,6 +216,7 @@ class Planner:
         """
         print("Generating Plan")
         actions = [(1, 0), (0, 1), (0, -1)]
+        # Initialize priority queue with start node
         # Node is defined as (f(s), g(s), state, action, parent)
         priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state(),
                            None, None)]
@@ -223,27 +224,38 @@ class Planner:
         print(priority_queue)
         goal_node = None
         while len(priority_queue) != 0:
+            # Pop out head node
             node = heapq.heappop(priority_queue)
+            # Check if node is goal
             if self._check_goal(node[2]):
                 goal_node = node
                 break
+            # Check if node has been visited and if the previous visit had a higher cost
             if node[2] in visited_states and node[0] >= visited_states[node[2]]:
                 continue
+            # Add node as visited
             visited_states[node[2]] = node[0]
             for action in actions:
+                # Get the next state for all the actions
                 next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
+                # If next state is not crashed
                 if next_state is not None:
+                    # If next state is not visited or we have found a shorter path
                     if next_state not in visited_states or \
                             self._d_from_goal(next_state)+node[1]+1 < visited_states[next_state]:
+                        # Add new node to queue
                         next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
                         heapq.heappush(priority_queue, next_node)
 
         self.action_seq = []
+        # If goal node is none, we could not find a path
         if goal_node is not None:
+            # Goal node has been found. Keep tracing back to parent node and keep track of the actions taken
             while goal_node[4] is not None:
                 self.action_seq.append(goal_node[3])
                 goal_node = goal_node[4]
         print(self.action_seq)
+        # Action list has to be reversed
         self.action_seq.reverse()
 
     def get_current_continuous_state(self):
@@ -443,7 +455,7 @@ if __name__ == "__main__":
 
     # You could replace this with other control publishers
     planner.publish_discrete_control()
-
+    print("Reached goal!")
     # save your action sequence
     result = np.array(planner.action_seq)
     np.savetxt("actions_continuous.txt", result, fmt="%.2e")

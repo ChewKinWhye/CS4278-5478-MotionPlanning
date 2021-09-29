@@ -234,7 +234,7 @@ class Planner:
                 state_value = -10000000
                 for action in actions:
                     if self.collision_checker(state[0], state[1]):
-                        current_state_value = -20
+                        current_state_value = -40
                     elif self._check_goal(state):
                         current_state_value = 20
                     else:
@@ -246,7 +246,7 @@ class Planner:
                         x, y, theta = state
                         next_state = self.discrete_motion_predict(x, y, theta, v, w)
                         if next_state is None:
-                            next_state_value = -20
+                            next_state_value = -40
                         else:
                             next_state_value = self.state_values[next_state]
                     else:
@@ -255,23 +255,23 @@ class Planner:
                         x, y, theta = state
                         next_state = self.discrete_motion_predict(x, y, theta, 1, 0)
                         if next_state is None:
-                            next_state_value += -20 * 0.9
+                            next_state_value += -40 * 0.9
                         else:
                             next_state_value += self.state_values[next_state] * 0.9
 
                         next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
                         if next_state is None:
-                            next_state_value += -20 * 0.05
+                            next_state_value += -40 * 0.05
                         else:
                             next_state_value += self.state_values[next_state] * 0.05
 
                         next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
                         if next_state is None:
-                            next_state_value += -20 * 0.05
+                            next_state_value += -40 * 0.05
                         else:
                             next_state_value += self.state_values[next_state] * 0.05
 
-                    total_value = current_state_value + 0.99 * next_state_value
+                    total_value = current_state_value + 0.95 * next_state_value
                     if total_value > state_value:
                         state_value = total_value
                 self.state_values[state] = state_value
@@ -299,7 +299,7 @@ class Planner:
                     x, y, theta = state
                     next_state = self.discrete_motion_predict(x, y, theta, v, w)
                     if next_state is None:
-                        next_state_value = -20
+                        next_state_value = -40
                     else:
                         next_state_value = self.state_values[next_state]
                 else:
@@ -308,19 +308,19 @@ class Planner:
                     x, y, theta = state
                     next_state = self.discrete_motion_predict(x, y, theta, 1, 0)
                     if next_state is None:
-                        next_state_value += -20 * 0.9
+                        next_state_value += -40 * 0.9
                     else:
                         next_state_value += self.state_values[next_state] * 0.9
 
                     next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
                     if next_state is None:
-                        next_state_value += -20 * 0.05
+                        next_state_value += -40 * 0.05
                     else:
                         next_state_value += self.state_values[next_state] * 0.05
 
                     next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
                     if next_state is None:
-                        next_state_value += -20 * 0.05
+                        next_state_value += -40 * 0.05
                     else:
                         next_state_value += self.state_values[next_state] * 0.05
                 if next_state_value > max_value:

@@ -455,6 +455,7 @@ if __name__ == "__main__":
 
     # You could replace this with other control publishers
     planner.publish_discrete_control()
+    print(planner.action_seq)
     print("Reached goal!")
     # save your action sequence
     result = np.array(planner.action_seq)

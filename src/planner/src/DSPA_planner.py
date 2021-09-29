@@ -58,10 +58,7 @@ class Planner:
         self.aug_map = None  # occupancy grid with inflation
         self.action_table = {}
         self.com = com
-        if com:
-            self.crash_penalty = -20
-        else:
-            self.crash_penalty = -400
+        self.crash_penalty = -20
         self.world_width = world_width
         self.world_height = world_height
         self.resolution = world_resolution

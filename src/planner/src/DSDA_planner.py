@@ -427,6 +427,8 @@ if __name__ == "__main__":
                         help='goal position')
     parser.add_argument('--com', type=int, default=0,
                         help="if the map is com1 map")
+    parser.add_argument('--map', type=str, default="map1",
+                        help="if the map is com1 map")
     args = parser.parse_args()
 
     try:
@@ -460,10 +462,10 @@ if __name__ == "__main__":
     # save your action sequence
     result = np.array(planner.action_seq)
     print(1)
-    np.savetxt("actions_dsda.txt", result, fmt="%.2e")
+    save_path = "controls/DSDA{}_{}_{}.txt".format(args.map, goal[0], goal[1])
+    np.savetxt(save_path, result, fmt="%.2e")
     print(2)
     # for MDP, please dump your policy table into a json file
     # dump_action_table(planner.action_table, 'mdp_policy.json')
-    print(planner.action_seq)
     # spin the ros
     rospy.spin()

@@ -56,6 +56,7 @@ class Planner:
         self.action_seq = None  # output
         self.aug_map = None  # occupancy grid with inflation
         self.action_table = {}
+        self.distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
 
         self.world_width = world_width
         self.world_height = world_height
@@ -201,6 +202,35 @@ class Planner:
         message.angular.z = az
         return message
 
+    def get_current_state_value(self, state):
+        if self.collision_checker(state[0], state[1]):
+            current_state_value = -80
+        elif self._check_goal(state):
+            current_state_value = 20
+        else:
+            current_state_value = -(self._d_from_goal(state) / self.distance_penalty_normalization)
+        return current_state_value
+
+    def get_next_state_value(self, next_state):
+        if next_state is None:
+            next_state_value = -80
+        else:
+            next_state_value = self.state_values[next_state]
+        return next_state_value
+
+    def get_forward_action_value(self, state):
+        next_state_value = 0
+        x, y, theta = state
+        next_state = self.discrete_motion_predict(x, y, theta, 1, 0)
+        next_state_value += self.get_next_state_value(next_state) * 0.9
+
+        next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
+        next_state_value += self.get_next_state_value(next_state) * 0.05
+
+        next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, -1)
+        next_state_value += self.get_next_state_value(next_state) * 0.9
+        return next_state_value
+
     def generate_plan(self):
         """TODO: FILL ME! This function generates the plan for the robot, given a goal.
         You should store the list of actions into self.action_seq.
@@ -218,7 +248,6 @@ class Planner:
 
         self.action_table = {}
         actions = [(1, 0), (0, 1), (0, -1)]
-        distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
         states = []
         for height in range(0, int(self.world_height * self.resolution)+1):
             for width in range(0, int(self.world_width * self.resolution)+1):
@@ -230,47 +259,25 @@ class Planner:
         for state in states:
             self.state_values[state] = 0
 
+        # 100 update steps
         for i in range(100):
+            # Update every state at each step
             for state in states:
                 state_value = -10000000
+                # Loop through all actions to find the highest value
+                # value = current_state_value + next_state_value
                 for action in actions:
-                    if self.collision_checker(state[0], state[1]):
-                        current_state_value = -80
-                    elif self._check_goal(state):
-                        current_state_value = 20
-                    else:
-                        current_state_value = -(self._d_from_goal(state) / distance_penalty_normalization)
+                    current_state_value = self.get_current_state_value(state)
                     # Obtain value for left and right
                     if action == (0, 1) or action == (0, -1):
                         # Obtain action deterministically
                         v, w = action
                         x, y, theta = state
                         next_state = self.discrete_motion_predict(x, y, theta, v, w)
-                        if next_state is None:
-                            next_state_value = -80
-                        else:
-                            next_state_value = self.state_values[next_state]
+                        next_state_value = self.get_next_state_value(next_state)
                     else:
-                        # Obtain action probabilistically
-                        next_state_value = 0
-                        x, y, theta = state
-                        next_state = self.discrete_motion_predict(x, y, theta, 1, 0)
-                        if next_state is None:
-                            next_state_value += -80 * 0.9
-                        else:
-                            next_state_value += self.state_values[next_state] * 0.9
-
-                        next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
-                        if next_state is None:
-                            next_state_value += -80 * 0.05
-                        else:
-                            next_state_value += self.state_values[next_state] * 0.05
-
-                        next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
-                        if next_state is None:
-                            next_state_value += -80 * 0.05
-                        else:
-                            next_state_value += self.state_values[next_state] * 0.05
+                        # Obtain next state value probabilistically
+                        next_state_value = self.get_forward_action_value(state)
 
                     total_value = current_state_value + 0.95 * next_state_value
                     if total_value > state_value:
@@ -285,31 +292,10 @@ class Planner:
                     v, w = action
                     x, y, theta = state
                     next_state = self.discrete_motion_predict(x, y, theta, v, w)
-                    if next_state is None:
-                        next_state_value = -80
-                    else:
-                        next_state_value = self.state_values[next_state]
+                    next_state_value = self.get_next_state_value(next_state)
                 else:
                     # Obtain action probabilistically
-                    next_state_value = 0
-                    x, y, theta = state
-                    next_state = self.discrete_motion_predict(x, y, theta, 1, 0)
-                    if next_state is None:
-                        next_state_value += -80 * 0.9
-                    else:
-                        next_state_value += self.state_values[next_state] * 0.9
-
-                    next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, 1)
-                    if next_state is None:
-                        next_state_value += -80 * 0.05
-                    else:
-                        next_state_value += self.state_values[next_state] * 0.05
-
-                    next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, -1)
-                    if next_state is None:
-                        next_state_value += -80 * 0.05
-                    else:
-                        next_state_value += self.state_values[next_state] * 0.05
+                    next_state_value = self.get_forward_action_value(state)
                 if next_state_value > max_value:
                     max_value = next_state_value
                     best_action = action

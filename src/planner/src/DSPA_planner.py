@@ -215,20 +215,21 @@ class Planner:
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
         print("Generating Plan")
-        turning_angle = 1
-        # action table is a dictionary of state('1,2,0') -> action (1, 0)
+
         self.action_table = {}
-        actions = [(1, 0), (0, turning_angle), (0, -turning_angle)]
+        actions = [(1, 0), (0, 1), (0, -1)]
         distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
         states = []
-        for height in range(-1, int(self.world_height * self.resolution)+2):
-            for width in range(-1, int(self.world_width * self.resolution)+2):
+        for height in range(0, int(self.world_height * self.resolution)+1):
+            for width in range(0, int(self.world_width * self.resolution)+1):
                 for theta in range(4):
                     states.append((height, width, theta))
+
         # Initialize all values to 0
         self.state_values = {}
         for state in states:
             self.state_values[state] = 0
+
         for i in range(100):
             for state in states:
                 state_value = -10000000
@@ -240,7 +241,7 @@ class Planner:
                     else:
                         current_state_value = -(self._d_from_goal(state) / distance_penalty_normalization)
                     # Obtain value for left and right
-                    if action == (0, turning_angle) or action == (0, -turning_angle):
+                    if action == (0, 1) or action == (0, -1):
                         # Obtain action deterministically
                         v, w = action
                         x, y, theta = state
@@ -275,25 +276,11 @@ class Planner:
                     if total_value > state_value:
                         state_value = total_value
                 self.state_values[state] = state_value
-        print(self.state_values)
-        print(self.state_values[(5, 5, 0)])
-        print(self.state_values[(5, 5, 1)])
-        print(self.state_values[(5, 5, 2)])
-        print(self.state_values[(5, 5, 3)])
-        print("Outside")
-        print(self.state_values[(5, 6, 3)])
-        print(self.state_values[(5, 4, 3)])
-        print(self.state_values[(4, 5, 3)])
-        print(self.state_values[(6, 5, 3)])
-        print(self.state_values[(3, 5, 0)])
-        print(self.state_values[(3, 5, 1)])
-        print(self.state_values[(3, 5, 2)])
-        print(self.state_values[(3, 5, 3)])
 
         for state in states:
             max_value, best_action = -10000000, None
             for action in actions:
-                if action == (0, turning_angle) or action == (0, -turning_angle):
+                if action == (0, 1) or action == (0, -1):
                     # Obtain action deterministically
                     v, w = action
                     x, y, theta = state
@@ -371,8 +358,8 @@ class Planner:
         Returns:
             bool -- True for collision, False for non-collision
         """
-        if int(y/self.resolution) < 0 or int(y/self.resolution) >= self.world_height or \
-           int(x/self.resolution) < 0 or int(x/self.resolution) >= self.world_width or \
+        if int(y/self.resolution) <= 0 or int(y/self.resolution) >= self.world_height or \
+           int(x/self.resolution) <= 0 or int(x/self.resolution) >= self.world_width or \
            self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100:
             return True
         return False

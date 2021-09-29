@@ -442,6 +442,7 @@ class Planner:
             current_state = self.get_current_discrete_state()
             action = self.action_table["{},{},{}".format(current_state[0],
                                                          current_state[1], current_state[2] % 4)]
+            print("Actual action", action)
             if action == (1, 0) or action == [1, 0]:
                 r = np.random.rand()
                 if r < 0.9:

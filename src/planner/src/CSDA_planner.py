@@ -479,7 +479,7 @@ if __name__ == "__main__":
     # save your action sequence
     result = np.array(planner.action_seq)
     save_path = "controls/CSDA_{}_{}_{}.txt".format(args.map, goal[0], goal[1])
-    np.savetxt("actions_continuous.txt", result, fmt="%.2e")
+    np.savetxt(save_path, result, fmt="%.2e")
 
     # for MDP, please dump your policy table into a json file
     # dump_action_table(planner.action_table, 'mdp_policy.json')

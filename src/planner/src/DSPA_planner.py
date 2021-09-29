@@ -212,7 +212,7 @@ class Planner:
 
     def get_current_state_value(self, state):
         if self.collision_checker(state[0], state[1]):
-            current_state_value = -200
+            current_state_value = -300
         elif self._check_goal(state):
             current_state_value = 20
         else:
@@ -221,7 +221,7 @@ class Planner:
 
     def get_next_state_value(self, next_state):
         if next_state is None:
-            next_state_value = -200
+            next_state_value = -300
         else:
             next_state_value = self.state_values[next_state]
         return next_state_value
@@ -268,7 +268,7 @@ class Planner:
             self.state_values[state] = 0
 
         # 200 update steps
-        for i in range(200):
+        for i in range(300):
             # Update every state at each step
             for state in states:
                 state_value = -10000000

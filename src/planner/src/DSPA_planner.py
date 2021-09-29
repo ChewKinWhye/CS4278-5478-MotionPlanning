@@ -230,7 +230,7 @@ class Planner:
         next_state_value += self.get_next_state_value(next_state) * 0.05
 
         next_state = self.discrete_motion_predict(x, y, theta, np.pi / 2, -1)
-        next_state_value += self.get_next_state_value(next_state) * 0.9
+        next_state_value += self.get_next_state_value(next_state) * 0.05
         return next_state_value
 
     def generate_plan(self):

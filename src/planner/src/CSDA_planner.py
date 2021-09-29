@@ -11,6 +11,7 @@ import copy
 import argparse
 import matplotlib.pyplot as plt
 import heapq
+import os
 
 ROBOT_SIZE = 0.2552  # width and height of robot in terms of stage unit
 
@@ -33,7 +34,7 @@ def dump_action_table(action_table, filename):
 
 
 class Planner:
-    def __init__(self, world_width, world_height, world_resolution, inflation_ratio=3):
+    def __init__(self, world_width, world_height, world_resolution, inflation_ratio=3, com=0):
         """init function of the base planner. You should develop your own planner
         using this class as a base.
 
@@ -56,6 +57,7 @@ class Planner:
         self.action_seq = None  # output
         self.aug_map = None  # occupancy grid with inflation
         self.action_table = {}
+        self.com = com
 
         self.world_width = world_width
         self.world_height = world_height
@@ -87,24 +89,30 @@ class Planner:
                 map_values[value] += 1
             else:
                 map_values[value] = 1
+        print(map_values)
         # TODO: FILL ME! implement obstacle inflation function and define self.aug_map = new_mask
+        if self.com and os.path.exists("com1_augmap.npy"):
+            self.aug_map = np.load("com1_augmap.npy")
+        else:
+            self.map = np.array(self.map).reshape((self.world_height, self.world_width))
+            # you should inflate the map to get self.aug_map
+            self.aug_map = copy.deepcopy(self.map)
+            pixel_buffer = int(ROBOT_SIZE / resolution * self.inflation_ratio)
+            for i in range(self.world_height):
+                for ii in range(self.world_width):
+                    if self.map[i, ii] == 100 or i == 0 or i == self.world_height-1 or ii == 0 or ii == self.world_width-1:
+                        top_index = max(0, i - pixel_buffer)
+                        bottom_index = min(self.world_height, i + pixel_buffer)
+                        left_index = max(0, ii - pixel_buffer)
+                        right_index = min(self.world_width, ii + pixel_buffer)
+                        for height_inflate in range(top_index, bottom_index):
+                            for width_inflate in range(left_index, right_index):
+                                self.aug_map[height_inflate, width_inflate] = 100
+        if self.com and not os.path.exists("com1_augmap.npy"):
+            np.save('com1_augmap.npy', self.aug_map)
 
-        self.map = np.array(self.map).reshape((self.world_height, self.world_width))
-        # you should inflate the map to get self.aug_map
-        self.aug_map = copy.deepcopy(self.map)
-        pixel_buffer = int(ROBOT_SIZE / resolution * self.inflation_ratio)
-        for i in range(self.world_height):
-            for ii in range(self.world_width):
-                if self.map[i, ii] == 100 or i == 0 or i == self.world_height - 1 or ii == 0 or ii == self.world_width - 1:
-                    top_index = max(0, i - pixel_buffer)
-                    bottom_index = min(self.world_height, i + pixel_buffer)
-                    left_index = max(0, ii - pixel_buffer)
-                    right_index = min(self.world_width, ii + pixel_buffer)
-                    for height_inflate in range(top_index, bottom_index):
-                        for width_inflate in range(left_index, right_index):
-                            self.aug_map[height_inflate, width_inflate] = 100
-        self.aug_map = self.aug_map
         self.map = self.map[::-1]
+        print(len(self.map))
         # plt.imshow(self.map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
         # plt.show()
         # plt.imshow(self.aug_map, cmap='gray', vmin=-1, vmax=100, interpolation='none')
@@ -437,6 +445,8 @@ if __name__ == "__main__":
                         help='goal position')
     parser.add_argument('--com', type=int, default=0,
                         help="if the map is com1 map")
+    parser.add_argument('--map', type=str, default="map1",
+                        help="if the map is com1 map")
     args = parser.parse_args()
 
     try:
@@ -456,7 +466,7 @@ if __name__ == "__main__":
 
     # TODO: You should change this value accordingly
     inflation_ratio = 2
-    planner = Planner(width, height, resolution, inflation_ratio=inflation_ratio)
+    planner = Planner(width, height, resolution, inflation_ratio=inflation_ratio, com=args.com)
     print("Done Initialization")
 
     planner.set_goal(goal[0], goal[1])
@@ -468,6 +478,7 @@ if __name__ == "__main__":
 
     # save your action sequence
     result = np.array(planner.action_seq)
+    save_path = "controls/CSDA_{}_{}_{}.txt".format(args.map, goal[0], goal[1])
     np.savetxt("actions_continuous.txt", result, fmt="%.2e")
 
     # for MDP, please dump your policy table into a json file

@@ -57,12 +57,13 @@ class Planner:
         self.action_seq = None  # output
         self.aug_map = None  # occupancy grid with inflation
         self.action_table = {}
-        self.distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
 
         self.world_width = world_width
         self.world_height = world_height
         self.resolution = world_resolution
         self.inflation_ratio = inflation_ratio
+        self.distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
+
         print("Calling map_callback()")
         self.map_callback()
 

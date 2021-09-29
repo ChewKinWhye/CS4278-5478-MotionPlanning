@@ -221,8 +221,8 @@ class Planner:
         actions = [(1, 0), (0, turning_angle), (0, -turning_angle)]
         distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
         states = []
-        for height in range(int(self.world_height * self.resolution)):
-            for width in range(int(self.world_width * self.resolution)):
+        for height in range(-1, int(self.world_height * self.resolution)+2):
+            for width in range(-1, int(self.world_width * self.resolution)+2):
                 for theta in [-1, 0, 1]:
                     states.append((height, width, theta))
         self.state_values = {}
@@ -255,6 +255,8 @@ class Planner:
 
                     x, y, theta = state
                     next_state = self.discrete_motion_predict(x, y, theta, v, w)
+                    if next_state[0] < 0 or next_state[0] > width or next_state[1] < 0 or next_state[1] > height:
+                        next_state_value = -20
                     next_state_value = self.state_values[next_state]
                     total_value = current_state_value + action_value + 0.95 * next_state_value
                     if total_value > state_value:
@@ -329,7 +331,9 @@ class Planner:
         Returns:
             bool -- True for collision, False for non-collision
         """
-        if self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100:
+        if self.aug_map[int(y/self.resolution), int(x/self.resolution)] == 100 or \
+                int(y/self.resolution) < 0 or int(y/self.resolution) > self.world_height or \
+                int(x/self.resolution) < 0 or int(x/self.resolution) > self.world_width:
             return True
         return False
 

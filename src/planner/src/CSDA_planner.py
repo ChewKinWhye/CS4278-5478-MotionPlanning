@@ -225,7 +225,10 @@ class Planner:
 
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
-        step_size = 1.57
+        if self.com:
+            step_size = 1.57
+        else:
+            step_size = 1.57 / 2
         # actions contains all combinations of velocity and angular velocity
         actions = []
         for angular_velocity in np.arange(-3.14, 3.14001, step_size).tolist():

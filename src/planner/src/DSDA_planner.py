@@ -460,7 +460,7 @@ if __name__ == "__main__":
     # save your action sequence
     result = np.array(planner.action_seq)
     print(1)
-    np.savetxt("actions_continuous.txt", result, fmt="%.2e")
+    np.savetxt("actions_dsda.txt", result, fmt="%.2e")
     print(2)
     # for MDP, please dump your policy table into a json file
     # dump_action_table(planner.action_table, 'mdp_policy.json')

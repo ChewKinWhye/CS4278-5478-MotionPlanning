@@ -215,36 +215,77 @@ class Planner:
         Each action could be: (v, \omega) where v is the linear velocity and \omega is the angular velocity
         """
         print("Generating Plan")
-        actions = [(1, 0), (0, 1), (0, -1)]
-        # Node is defined as (f(s), g(s), state, action, parent)
-        priority_queue = [(self._d_from_goal(self.get_current_discrete_state()), 0, self.get_current_discrete_state(),
-                           None, None)]
-        visited_states = {}
-        print(priority_queue)
-        goal_node = None
-        while len(priority_queue) != 0:
-            node = heapq.heappop(priority_queue)
-            if self._check_goal(node[2]):
-                goal_node = node
-                break
-            if node[2] in visited_states and node[0] >= visited_states[node[2]]:
-                continue
-            visited_states[node[2]] = node[0]
-            for action in actions:
-                next_state = self.discrete_motion_predict(node[2][0], node[2][1], node[2][2], action[0], action[1])
-                if next_state is not None:
-                    if next_state not in visited_states or \
-                            self._d_from_goal(next_state)+node[1]+1 < visited_states[next_state]:
-                        next_node = (self._d_from_goal(next_state)+node[1]+1, node[1]+1, next_state, action, node)
-                        heapq.heappush(priority_queue, next_node)
+        turning_angle = 1
+        # action table is a dictionary of state('1,2,0') -> action (1, 0)
+        self.action_table = {}
+        actions = [(1, 0), (0, turning_angle), (0, -turning_angle)]
+        distance_penalty_normalization = (self.world_height * self.resolution + self.world_width * self.resolution) * 10
+        states = []
+        for height in range(int(self.world_height * self.resolution)):
+            for width in range(int(self.world_width * self.resolution)):
+                for theta in [-1, 0, 1]:
+                    states.append((height, width, theta))
+        self.state_values = {}
+        for i in range(100):
+            for state in states:
+                state_value = -10000000
+                for action in actions:
+                    if self.collision_checker(state[0], state[1]):
+                        current_state_value = -20
+                    elif self._check_goal(state):
+                        current_state_value = -20
+                    else:
+                        current_state_value = -self._d_from_goal(state) / distance_penalty_normalization
+                    action_value = 0
+                    # Obtain value for left and right
+                    if action == (0, turning_angle) or action == (0, -turning_angle):
+                        # Give a small penalty for turning
+                        action_value -= 0.1
+                        # Obtain action deterministically
+                        v, w = action
+                    else:
+                        # Obtain action probabilistically
+                        r = np.random.rand()
+                        if r < 0.9:
+                            v, w = (1, 0)
+                        elif r < 0.95:
+                            v, w = (np.pi / 2, 1)
+                        else:
+                            v, w = (np.pi / 2, -1)
 
-        self.action_seq = []
-        if goal_node is not None:
-            while goal_node[4] is not None:
-                self.action_seq.append(goal_node[3])
-                goal_node = goal_node[4]
-        print(self.action_seq)
-        self.action_seq.reverse()
+                    x, y, theta = state
+                    next_state = self.discrete_motion_predict(x, y, theta, v, w)
+                    next_state_value = self.state_values[next_state]
+                    total_value = current_state_value + action_value + 0.95 * next_state_value
+                    if total_value > state_value:
+                        state_value = total_value
+        for state in states:
+            max_value, best_action = -10000000, None
+            for action in actions:
+                action_value = 0
+                if action == (0, turning_angle) or action == (0, -turning_angle):
+                    # Give a small penalty for turning
+                    action_value -= 0.1
+                    # Obtain action deterministically
+                    v, w = action
+                else:
+                    # Obtain action probabilistically
+                    r = np.random.rand()
+                    if r < 0.6:
+                        v, w = (1, 0)
+                    elif r < 0.8:
+                        v, w = (np.pi / 2, 1)
+                    else:
+                        v, w = (np.pi / 2, -1)
+                x, y, theta = state
+                next_state = self.discrete_motion_predict(x, y, theta, v, w)
+                next_state_value = self.state_values[next_state]
+                total_value = action_value + next_state_value
+                if total_value > max_value:
+                    max_value = total_value
+                    best_action = action
+            self.action_table[state] = best_action
+
 
     def get_current_continuous_state(self):
         """Our state is defined to be the tuple (x,y,theta). 
@@ -442,14 +483,14 @@ if __name__ == "__main__":
         planner.generate_plan()
 
     # You could replace this with other control publishers
-    planner.publish_discrete_control()
+    planner.publish_stochastic_control()
 
     # save your action sequence
-    result = np.array(planner.action_seq)
-    np.savetxt("actions_continuous.txt", result, fmt="%.2e")
+    # result = np.array(planner.action_seq)
+    # np.savetxt("actions_continuous.txt", result, fmt="%.2e")
 
     # for MDP, please dump your policy table into a json file
-    # dump_action_table(planner.action_table, 'mdp_policy.json')
+    dump_action_table(planner.action_table, 'mdp_policy.json')
 
     # spin the ros
     rospy.spin()

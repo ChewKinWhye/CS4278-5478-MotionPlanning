@@ -514,14 +514,15 @@ if __name__ == "__main__":
         planner.generate_plan()
 
     # You could replace this with other control publishers
+    save_path = "controls/DSPA_{}_{}_{}.json".format(args.map, goal[0], goal[1])
+    dump_action_table(planner.action_table, save_path)
     planner.publish_stochastic_control()
     # save your action sequence
     # result = np.array(planner.action_seq)
     # np.savetxt("actions_continuous.txt", result, fmt="%.2e")
 
     # for MDP, please dump your policy table into a json file
-    save_path = "controls/DSPA_{}_{}_{}.json".format(args.map, goal[0], goal[1])
-    dump_action_table(planner.action_table, save_path)
+
 
     # spin the ros
     rospy.spin()

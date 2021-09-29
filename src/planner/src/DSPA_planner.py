@@ -225,7 +225,10 @@ class Planner:
             for width in range(-1, int(self.world_width * self.resolution)+2):
                 for theta in [-1, 0, 1]:
                     states.append((height, width, theta))
+        # Initialize all values to 0
         self.state_values = {}
+        for state in states:
+            self.state_values[state] = 0
         for i in range(100):
             for state in states:
                 state_value = -10000000

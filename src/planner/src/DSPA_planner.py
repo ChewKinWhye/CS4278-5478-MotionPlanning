@@ -61,7 +61,7 @@ class Planner:
         if com:
             self.crash_penalty = -20
         else:
-            self.crash_penalty = -40
+            self.crash_penalty = -80
         self.world_width = world_width
         self.world_height = world_height
         self.resolution = world_resolution
